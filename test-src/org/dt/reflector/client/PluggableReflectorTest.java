@@ -50,7 +50,7 @@ public class PluggableReflectorTest extends GWTTestCase {
     
     assertEquals("Test", PropertyUtils.getProperty(bean, "name"));
     assertEquals(0, new BigDecimal("123456789123456789").compareTo((BigDecimal) PropertyUtils.getProperty(bean, "largeValue")));
-    assertEquals(new Integer(32000), PropertyUtils.getProperty(bean, "smallValue"));
+    assertEquals(32000, PropertyUtils.getProperty(bean, "smallValue"));
   }
 
   
@@ -58,7 +58,7 @@ public class PluggableReflectorTest extends GWTTestCase {
     ReallySimpleBean bean = (ReallySimpleBean) ReflectionOracle.Util.getReflector(ReallySimpleBean.class.getName()).newInstance();
     PropertyUtils.setProperty(bean, "name", "Tester");
     PropertyUtils.setProperty(bean, "largeValue", BigDecimal.valueOf(321));
-    PropertyUtils.setProperty(bean, "smallValue", Integer.valueOf(128));
+    PropertyUtils.setProperty(bean, "smallValue", 128);
     
     assertEquals("Tester", bean.getName());
     assertEquals(Integer.valueOf(128), bean.getSmallValue());

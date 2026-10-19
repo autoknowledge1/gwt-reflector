@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <project name="gwt-reflector" default="package" xmlns:ivy="antlib:org.apache.ivy.ant" >
 
-  <target name="init">
-    <property name="source" value="${basedir}/src" />
-    <property name="resources" value="${basedir}/resources" />
-    <property name="test-source" value="${basedir}/test-src" />
-    <property name="classes" value="${basedir}/classes" />
-    <property name="test-classes" value="${basedir}/test-classes" />
-    <property name="test-reports" value="${basedir}/test-reports" />
-    <property name="lib" value="${basedir}/lib" />
-    <property name="test-lib" value="${basedir}/lib-test" />
-    
-    <property name="version" value="0.5" />
-  	<filter token="version" value="${version}" />
-  	
-  	<property name="product-jar" value="${basedir}/${ant.project.name}-${version}.jar" />
-  </target>
+  <property name="source" value="${basedir}/src" />
+  <property name="resources" value="${basedir}/resources" />
+  <property name="test-source" value="${basedir}/test-src" />
+  <property name="classes" value="${basedir}/classes" />
+  <property name="test-classes" value="${basedir}/test-classes" />
+  <property name="test-reports" value="${basedir}/test-reports" />
+  <property name="lib" value="${basedir}/lib" />
+  <property name="test-lib" value="${basedir}/lib-test" />
+  <property name="debug" value="no"/>
+  <property name="optimize" value="yes"/>
+
+  <property name="version" value="0.5" />
+  <filter token="version" value="${version}" />
+
+  <property name="product-jar" value="${basedir}/${ant.project.name}-${version}.jar" />
+
   
-  
-  <target name="clean" depends="init">
+  <target name="clean" description="Clean up built classes and jar">
     <delete dir="${classes}" />
     <delete dir="${lib}" />
     <delete dir="${test-classes}" />
@@ -36,16 +36,16 @@
  	</copy>  </target>
   
   <target name="resolve" description="Retrieve dependencies with ivy">
-    <ivy:retrieve conf="prod" pattern="${lib}/[artifact].[ext]" />
-    <ivy:retrieve conf="test" pattern="${test-lib}/[artifact].[ext]" />
+    <ivy:retrieve conf="prod" pattern="${lib}/[artifact]-[type]-[revision](-[classifier]).[ext]" />
+    <ivy:retrieve conf="test" pattern="${test-lib}/[artifact]-[type]-[revision](-[classifier]).[ext]" />
   </target>
   
-  <target name="compile" depends="init,resolve">
+  <target name="compile" depends="resolve" description="Compile the sources">
     <javac srcdir="${source}" destdir="${classes}"
            debug="${debug}"
            optimize="${optimize}"
-           source="1.6"
-           target="1.6"
+           source="17"
+           target="17"
            deprecation="off">
       <classpath>
         <fileset dir="${lib}" includes="*.jar" />
@@ -58,7 +58,7 @@
     </copy>
   </target>
   
-  <target name="compile-tests" depends="init,compile,resolve">
+  <target name="compile-tests" depends="compile,resolve">
     <mkdir dir="${test-classes}" />
 
     <!-- Compile all of the the test cases -->
@@ -79,7 +79,7 @@
   </target>
   
   
-  <target name="test" depends="init,compile-tests">
+  <target name="test" depends="compile-tests">
     <mkdir dir="${test-reports}" />
     
     <junit fork="yes" printsummary="yes" haltonfailure="yes">
@@ -101,8 +101,8 @@
   </target>
   
 	
-  <target name="package" depends="init,clean,resolve,compile,test">
-    <!-- The is the main target to create the distributable .jar file -->
+  <target name="package" depends="clean,resolve,compile,test" description="Construct the jar file">
+    <!-- This is the main target to create the distributable .jar file -->
 
     <!-- Put everything in ${classes} into the .jar file -->
     <jar jarfile="${product-jar}" basedir="${classes}"/>
